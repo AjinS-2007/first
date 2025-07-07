@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ATM Interface</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #00c9a7;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    .container {
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 15px;
+      display: inline-block;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🏧 ATM INTERFACE</h1>
+  <div class="container">
+    <input type="number" id="amountInput" placeholder="Enter amount" /><br>
+    <button onclick="atm.withdraw()">Withdraw</button>
+    <button onclick="atm.deposit()">Deposit</button>
+    <button onclick="atm.checkBalance()">Check Balance</button>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    // BankAccount class
+    class BankAccount {
+      constructor(initialBalance = 0) {
+        this.balance = initialBalance;
+      }
+
+      deposit(amount) {
+        if (amount <= 0) return false;
+        this.balance += amount;
+        return true;
+      }
+
+      withdraw(amount) {
+        if (amount > this.balance || amount <= 0) return false;
+        this.balance -= amount;
+        return true;
+      }
+
+      getBalance() {
+        return this.balance;
+      }
+    }
+
+    // ATM class
+    class ATM {
+      constructor(account) {
+        this.account = account;
+      }
+
+      getInputAmount() {
+        const amount = Number(document.getElementById("amountInput").value);
+        return isNaN(amount) || amount <= 0 ? null : amount;
+      }
+
+      deposit() {
+        const amount = this.getInputAmount();
+        if (amount === null) {
+          this.showMessage("⚠️ Enter a valid amount to deposit.");
+          return;
+        }
+        const success = this.account.deposit(amount);
+        this.showMessage(success ? `✅ ₹${amount} deposited successfully.` : `❌ Deposit failed.`);
+      }
+
+      withdraw() {
+        const amount = this.getInputAmount();
+        if (amount === null) {
+          this.showMessage("⚠️ Enter a valid amount to withdraw.");
+          return;
+        }
+        const success = this.account.withdraw(amount);
+        this.showMessage(success ? `✅ ₹${amount} withdrawn successfully.` : `❌ Insufficient balance or invalid amount.`);
+      }
+
+      checkBalance() {
+        const balance = this.account.getBalance();
+        this.showMessage(`💰 Current Balance: ₹${balance}`);
+      }
+
+      showMessage(msg) {
+        document.getElementById("message").textContent = msg;
+        document.getElementById("amountInput").value = "";
+      }
+    }
+
+    // Initialize ATM with a bank account (₹1000 initial)
+    const userAccount = new BankAccount(1000);
+    const atm = new ATM(userAccount);
+  </script>
+
+</body>
+</html>
